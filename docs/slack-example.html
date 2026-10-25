@@ -1,0 +1,58 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Slack message example</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff;font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;color:#1d1c1d;font-size:15px;line-height:1.46}
+  .wrap{width:760px;padding:22px 26px 26px}
+  .msg{display:flex;gap:10px;margin-bottom:14px}
+  .msg.cont{margin-left:46px;margin-top:-6px}
+  .av{width:36px;height:36px;border-radius:6px;background:#2c5fb3;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none}
+  .head{font-weight:900;font-size:15px}
+  .app{font-size:10px;font-weight:700;background:#e8e8e8;color:#616061;padding:1px 4px;border-radius:3px;margin:0 6px;vertical-align:1px}
+  .time{color:#616061;font-size:12px;font-weight:400}
+  .ctx{display:flex;align-items:center;gap:6px;margin:6px 0 10px;font-weight:700;font-size:13px;color:#454245}
+  .ic{width:20px;height:20px;border-radius:5px;display:block}
+  a{color:#1264a3;text-decoration:none}
+  .c{font-style:italic;margin-top:1px}
+  .warn{margin-top:1px}
+  .sep{height:1px;background:#e8e8e8;margin:4px 0 14px 46px}
+  .note{margin:6px 0 0 46px;color:#868686;font-size:11px}
+</style></head><body><div class="wrap">
+
+<svg width="0" height="0" style="position:absolute"><defs>
+ <linearGradient id="ig" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#FEDA75"/><stop offset=".35" stop-color="#FA7E1E"/><stop offset=".6" stop-color="#D62976"/><stop offset=".85" stop-color="#962FBF"/><stop offset="1" stop-color="#4F5BD5"/></linearGradient>
+</defs></svg>
+
+<!-- comment 1 -->
+<div class="msg"><div class="av">CB</div><div>
+  <div class="head">Comment Bot<span class="app">APP</span><span class="time">9:00 AM</span></div>
+  <div class="ctx"><svg class="ic" viewBox="0 0 20 20"><rect width="20" height="20" rx="5" fill="url(#ig)"/><rect x="4.5" y="4.5" width="11" height="11" rx="3.2" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="10" cy="10" r="2.7" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="13.6" cy="6.4" r=".9" fill="#fff"/></svg>Brand · Instagram</div>
+  <div><b>@jane</b> &nbsp;·&nbsp; <a href="#">Post</a></div>
+  <div class="c">Is now a good time to buy a second property in Singapore?</div>
+</div></div>
+<div class="msg cont"><div>Great question! Run the numbers on ABSD and your TDSR first, then decide how much cushion you want. 🏠</div></div>
+
+<div class="sep"></div>
+
+<!-- comment 2: needs human -->
+<div class="msg"><div class="av">CB</div><div>
+  <div class="head">Comment Bot<span class="app">APP</span><span class="time">9:00 AM</span></div>
+  <div class="ctx"><svg class="ic" viewBox="0 0 20 20"><rect width="20" height="20" rx="5" fill="url(#ig)"/><rect x="4.5" y="4.5" width="11" height="11" rx="3.2" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="10" cy="10" r="2.7" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="13.6" cy="6.4" r=".9" fill="#fff"/></svg>Brand · Instagram</div>
+  <div><b>@alex</b> &nbsp;·&nbsp; <a href="#">Post</a></div>
+  <div class="c">I want a refund, this is a scam!</div>
+  <div class="warn">⚠️ <b>Needs human:</b> refund complaint</div>
+</div></div>
+
+<div class="sep"></div>
+
+<!-- comment 3: expert on Facebook -->
+<div class="msg"><div class="av">CB</div><div>
+  <div class="head">Comment Bot<span class="app">APP</span><span class="time">9:01 AM</span></div>
+  <div class="ctx"><svg class="ic" viewBox="0 0 20 20"><rect width="20" height="20" rx="10" fill="#1877F2"/><path d="M11.1 16.5v-5.2h1.8l.3-2.1h-2.1V7.9c0-.6.2-1 1-1h1.1V5c-.2 0-.9-.1-1.6-.1-1.6 0-2.7 1-2.7 2.8v1.5H7v2.1h1.9v5.2z" fill="#fff"/></svg>Expert · Facebook</div>
+  <div><b>Sam Lee</b> &nbsp;·&nbsp; <a href="#">Post</a></div>
+  <div class="c">How do cooling measures affect investors?</div>
+</div></div>
+<div class="msg cont"><div>Mainly through ABSD and TDSR: they raise your upfront cost and cap how much you can borrow, so model both before you commit.</div></div>
+
+<div class="note">Illustration with sample data. Each comment is posted as two messages: the comment, then the reply alone (easy to copy).</div>
+</div></body></html>
