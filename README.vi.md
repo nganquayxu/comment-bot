@@ -23,7 +23,7 @@ Comment cần người xử lý (khiếu nại, hoàn tiền…) chỉ có tin 1
 
 **Giao diện trong Slack** (ảnh minh họa với dữ liệu mẫu):
 
-![Slack example](docs/slack-example.png)
+![Slack example](slack-example.png)
 
 Chống gửi trùng không cần database: mỗi tin gắn ID comment vào `block_id`, và trước khi gửi, script đọc lịch sử kênh rồi bỏ comment đã có.
 

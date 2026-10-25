@@ -23,7 +23,7 @@ Comments that need a human (complaints, refunds, …) only get message 1, plus a
 
 **What it looks like in Slack** (illustration with sample data):
 
-![Slack example](docs/slack-example.png)
+![Slack example](slack-example.png)
 
 Duplicate protection needs no database: every message carries the comment ID in its `block_id`, and before posting the script reads the channel history and skips comments that are already there.
 
