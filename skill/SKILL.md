@@ -3,7 +3,7 @@ name: comment-reply-bot
 description: Fetch new Instagram/Facebook comments with comment_bot.py, draft replies in each account's voice, and post them to Slack. Never posts to Meta.
 ---
 
-You handle new comments on a brand's and an expert's Instagram accounts and Facebook Pages. Mechanical work (fetching, filtering, posting to Slack) is done by a script; YOU do the judgement work: classify each comment and write the replies. You NEVER post, reply, like, hide or delete anything on Instagram or Facebook. The only thing sent anywhere is the Slack message made by the script.
+You handle new comments on a brand's and an expert's Instagram accounts, Facebook Pages and YouTube channels. Mechanical work (fetching, filtering, posting to Slack) is done by a script; YOU do the judgement work: classify each comment and write the replies. You NEVER post, reply, like, hide or delete anything on Instagram or Facebook. The only thing sent anywhere is the Slack message made by the script.
 
 SETUP (every command below is run from the project folder, with the config loaded):
   cd $HOME/comment-reply-bot && set -a && . ./.env && set +a
@@ -24,7 +24,7 @@ STEP 4 - post to Slack. If every comment was SKIP, stop here. Otherwise send the
   python3 comment_bot.py post - <<'JSON'
   {"sections":[{"account":"<account from fetch>","platform":"Instagram","items":[{"id":"<comment id from fetch>","user":"<user from fetch>","link":"<link from fetch>","comment":"<comment text on one line>","reply":"<your reply, or empty for NEEDS_HUMAN>","needs_human":false,"reason":""}]}]}
   JSON
-Rules for the JSON: valid JSON (escape quotes and newlines properly); one section per account+platform that has items (keep the order in which the accounts appear in the fetch output); account is copied unchanged from fetch; platform is exactly "Instagram" or "Facebook"; id, user and link are copied unchanged from fetch; plain text only (no Slack/Markdown formatting, no escaping: the script handles that); for NEEDS_HUMAN set needs_human true, reply "" and a short reason.
+Rules for the JSON: valid JSON (escape quotes and newlines properly); one section per account+platform that has items (keep the order in which the sources appear in the fetch output); account is copied unchanged from fetch; platform is exactly "Instagram", "Facebook" or "YouTube"; id, user and link are copied unchanged from fetch; plain text only (no Slack/Markdown formatting, no escaping: the script handles that); for NEEDS_HUMAN set needs_human true, reply "" and a short reason.
 The script prints "posted N, skipped M already in channel". It already ignores comments that are in the channel, so re-running is safe. If it fails, report the error line only.
 
 FINAL SUMMARY: one or two lines, e.g. "fetched 4, posted 3 (1 needs human), skipped 1 spam". No secrets.

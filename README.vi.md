@@ -2,7 +2,7 @@
 
 🇬🇧 [English](README.md) · 🇻🇳 Tiếng Việt
 
-Tự động lấy comment mới trên **Instagram** và **Facebook Page**, nhờ **Claude** lọc spam và soạn sẵn câu trả lời (đúng giọng từng tài khoản), rồi gửi vào **Slack** để mọi người copy và đăng. Bot **chỉ đọc** từ Meta, không tự đăng, ẩn hay xóa comment nào.
+Tự động lấy comment mới trên **Instagram**, **Facebook Page** và **YouTube**, nhờ **Claude** lọc spam và soạn sẵn câu trả lời (đúng giọng từng tài khoản), rồi gửi vào **Slack** để mọi người copy và đăng. Bot **chỉ đọc** từ Meta và YouTube, không tự đăng, ẩn hay xóa comment nào.
 
 ## Cách hoạt động
 
@@ -41,6 +41,7 @@ Chống gửi trùng không cần database: mỗi tin gắn ID comment vào `blo
 - Python 3.8+
 - Tài khoản Instagram **Business/Creator** nối với một **Page Facebook**
 - App Meta với token Page có quyền `instagram_basic`, `instagram_manage_comments`, `pages_show_list`, `pages_read_engagement`, `pages_read_user_content`
+- *(Tùy chọn, cho YouTube)* project Google Cloud đã bật **YouTube Data API v3** và một **API key** (chỉ đọc là đủ), cùng ID kênh
 - Slack app có bot token (`xoxb-...`), scope `chat:write` và `channels:history` (kênh riêng: `groups:history`), bot đã được mời vào kênh
 - Claude Code / app Claude để chạy scheduled task, hoặc routine trên Claude web
 
@@ -103,7 +104,8 @@ Lưu ý: token Meta và Slack nằm trong cấu hình môi trường cloud. Hãy
 
 ## Lưu ý và giới hạn
 
-- Chỉ lấy comment trong `LOOKBACK_HOURS` giờ gần nhất và 15 bài gần nhất của Instagram, 10 bài gần nhất của Facebook.
+- Chỉ lấy comment trong `LOOKBACK_HOURS` giờ gần nhất: 15 bài gần nhất của Instagram, 10 bài gần nhất của Facebook, và 100 comment gốc mới nhất trên toàn kênh YouTube.
+- YouTube dùng API key chỉ đọc (không cần OAuth). Mỗi lần lấy tốn khoảng 1 đơn vị hạn mức (mặc định 10.000 đơn vị/ngày).
 - Comment spam (loại SKIP) không vào Slack nên được Claude xét lại ở các lần chạy sau trong khoảng thời gian lấy comment. Chi phí nhỏ.
 - Slack giới hạn khoảng 1 tin/giây mỗi kênh; script nghỉ giữa các comment và tự thử lại khi bị giới hạn.
 - Token Meta lấy từ Graph API Explorer hết hạn nhanh. Dùng token Page dài hạn hoặc System User token để chạy lâu dài.
@@ -114,6 +116,7 @@ Lưu ý: token Meta và Slack nằm trong cấu hình môi trường cloud. Hãy
 | Hiện tượng | Nguyên nhân thường gặp |
 |---|---|
 | `fetch` báo `Meta HTTP 400 code=190` | Token hết hạn hoặc sai |
+| `fetch` báo `YouTube HTTP 403` | Thiếu hoặc bị giới hạn API key, chưa bật YouTube Data API v3, hoặc hết hạn mức |
 | `fetch` báo `code=100 ... nonexisting field` | ID Page/Instagram sai (ví dụ dùng ID Instagram làm Page ID) |
 | `Slack ... not_in_channel` | Chưa mời bot vào kênh |
 | `Slack ... missing_scope` | Thiếu `chat:write` hoặc `channels:history`; thêm quyền rồi *Reinstall to Workspace* |

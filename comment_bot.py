@@ -11,6 +11,7 @@ on every run.
 
 Env (fetch): META_PAGE_TOKEN, META_PAGE_ID, IG_USER_ID,
              META_TOKEN_PERSONAL, META_PAGE_ID_PERSONAL, IG_USER_ID_PERSONAL
+             YOUTUBE_API_KEY, YT_CHANNEL_ID, YT_CHANNEL_ID_PERSONAL  (YouTube is optional)
              ACCOUNT_NAME (default "Brand"), ACCOUNT_NAME_PERSONAL (default "Expert")
              LOOKBACK_HOURS (default 24)
 Env (post):  SLACK_BOT_TOKEN, SLACK_CHANNEL_ID, SLACK_PAUSE (default 4)
@@ -18,6 +19,7 @@ Optional:    if SLACK_* are set, `fetch` also hides comments already posted to t
 """
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -26,6 +28,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 
 GRAPH = "https://graph.facebook.com/v21.0"
+YOUTUBE = "https://www.googleapis.com/youtube/v3"
 LOOKBACK_HOURS = float(os.environ.get("LOOKBACK_HOURS", "24"))
 ACCOUNT_NAME = os.environ.get("ACCOUNT_NAME", "Brand")
 ACCOUNT_NAME_PERSONAL = os.environ.get("ACCOUNT_NAME_PERSONAL", "Expert")
@@ -36,6 +39,7 @@ PAUSE = float(os.environ.get("SLACK_PAUSE", "4"))
 ICONS = {
     "Instagram": "https://www.google.com/s2/favicons?domain=instagram.com&sz=128",
     "Facebook": "https://www.google.com/s2/favicons?domain=facebook.com&sz=128",
+    "YouTube": "https://www.google.com/s2/favicons?domain=youtube.com&sz=128",
 }
 
 
@@ -55,6 +59,7 @@ def graph_get(path, token, params):
 
 
 def parse_time(s):
+    s = re.sub(r"\.\d+(?=Z|[+-]\d{2}:?\d{2}$)", "", s)  # drop fractional seconds
     return datetime.strptime(s, "%Y-%m-%dT%H:%M:%S%z")
 
 
@@ -71,6 +76,14 @@ def sources():
             out.append((account, "Instagram", ig_id, token))
         if page_id:
             out.append((account, "Facebook", page_id, token))
+    yt_key = os.environ.get("YOUTUBE_API_KEY")
+    if yt_key:
+        for account, channel_id in (
+            (ACCOUNT_NAME, os.environ.get("YT_CHANNEL_ID")),
+            (ACCOUNT_NAME_PERSONAL, os.environ.get("YT_CHANNEL_ID_PERSONAL")),
+        ):
+            if channel_id:
+                out.append((account, "YouTube", channel_id, yt_key))
     return out
 
 
@@ -128,6 +141,47 @@ def fetch_facebook(account, page_id, token, since):
 
 
 # --------------------------------------------------------------------------- Slack
+def youtube_get(path, api_key, params):
+    url = f"{YOUTUBE}/{path}?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"X-Goog-Api-Key": api_key})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.load(resp)
+    except urllib.error.HTTPError as e:
+        try:
+            err = json.load(e).get("error", {})
+        except Exception:
+            err = {}
+        raise RuntimeError(f"YouTube HTTP {e.code} {err.get('message', '')[:120]}")
+
+
+def fetch_youtube(account, channel_id, api_key, since):
+    """Top-level comments on all videos of the channel (newest first)."""
+    threads = youtube_get("commentThreads", api_key, {
+        "part": "snippet,replies", "allThreadsRelatedToChannelId": channel_id,
+        "order": "time", "maxResults": 100, "textFormat": "plainText"}).get("items", [])
+    found = []
+    for th in threads:
+        top = th["snippet"]["topLevelComment"]
+        sn = top["snippet"]
+        if parse_time(sn["publishedAt"]) < since:
+            continue
+        if (sn.get("authorChannelId") or {}).get("value") == channel_id:
+            continue
+        replies = (th.get("replies") or {}).get("comments", [])
+        if any(((r["snippet"].get("authorChannelId") or {}).get("value") == channel_id) for r in replies):
+            continue
+        video_id = sn.get("videoId") or th["snippet"].get("videoId", "")
+        found.append({
+            "id": top["id"], "account": account, "platform": "YouTube",
+            "user": sn.get("authorDisplayName") or "YouTube user",
+            "link": f"https://www.youtube.com/watch?v={video_id}&lc={top['id']}",
+            "post": video_id, "comment": sn.get("textOriginal") or sn.get("textDisplay", ""),
+            "created": sn["publishedAt"],
+        })
+    return found
+
+
 def slack(method, payload):
     req = urllib.request.Request(
         f"https://slack.com/api/{method}",
@@ -180,6 +234,8 @@ def cmd_fetch():
         try:
             if platform == "Instagram":
                 comments += fetch_instagram(account, ident, token, since)
+            elif platform == "YouTube":
+                comments += fetch_youtube(account, ident, token, since)
             else:
                 comments += fetch_facebook(account, ident, token, since)
         except Exception as e:  # one broken source must not stop the others

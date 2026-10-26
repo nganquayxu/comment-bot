@@ -11,7 +11,7 @@ Copy this file to `rules.md` (git-ignored) and edit it for your own accounts.
 
 ## Reply style (all accounts)
 
-English, 1-3 sentences, natural social tone. Instagram: at most a couple of emojis. Facebook: slightly longer is fine. No hashtag spam.
+English, 1-3 sentences, natural social tone. Instagram: at most a couple of emojis. Facebook and YouTube: slightly longer is fine (YouTube replies can be a little more explanatory). No hashtag spam.
 
 ## Voices
 
