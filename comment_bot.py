@@ -276,20 +276,20 @@ def cmd_post(path):
             first = False
             url = "".join(c for c in str(it.get("link") or "") if c not in "<>| \t\r\n")
             link = f"<{url}|Post>" if url else "Post"
-            text = f"*{one(it.get('user'))}*  ·  {link}\n_{one(it.get('comment'))}_"
+            text = f"*{one(it.get('user'))}*  \u00b7  {link}\n_{one(it.get('comment'))}_"
             if it.get("needs_human"):
                 text += f"\n:warning: *Needs human:* {one(it.get('reason'))}"
             blocks = [
                 {"type": "context", "elements": [
                     {"type": "image", "image_url": ICONS.get(sec.get("platform"), ICONS["Instagram"]),
                      "alt_text": str(sec.get("platform", ""))},
-                    {"type": "mrkdwn", "text": f"*{one(sec.get('account'))} · {one(sec.get('platform'))}*"},
+                    {"type": "mrkdwn", "text": f"*{one(sec.get('account'))} \u00b7 {one(sec.get('platform'))}*"},
                 ]},
                 {"type": "section", "block_id": f"cid:{cid}", "text": {"type": "mrkdwn", "text": text[:2900]}},
             ]
             slack("chat.postMessage", {
                 "channel": SLACK_CHANNEL,
-                "text": f"{sec.get('account')} · {sec.get('platform')}: {it.get('user')}",
+                "text": f"{sec.get('account')} \u00b7 {sec.get('platform')}: {it.get('user')}",
                 "blocks": blocks, "unfurl_links": False, "unfurl_media": False})
             reply = str(it.get("reply") or "").strip()
             if reply and not it.get("needs_human"):
